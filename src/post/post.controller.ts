@@ -7,7 +7,8 @@ const getPosts = async (req: Request, res: Response) => {
   res.send({
     success: true,
     message: "Post fetch successful",
-    data: result,
+    total: result.total,
+    data: result.data,
   });
 };
 const getSinglePost = async (req: Request, res: Response) => {

@@ -6,41 +6,49 @@ const getPosts = async (options: any) => {
   const { sortBy, sortOrder, searchTerm, authorId, page, limit } = options;
   const take = parseInt(limit) || 10;
   const skip = parseInt(limit) * parseInt(page) - parseInt(limit) || 0;
-  const result = await prisma.post.findMany({
-    take,
-    skip,
-    include: {
-      author: true,
-      category: true,
-    },
-    orderBy:
-      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: "desc" },
-    where: {
-      //   author: {
-      //     id: {
-      //       equals: authorId,
-      //     },
-      //   },
-      OR: [
-        {
-          title: {
-            contains: searchTerm,
-            mode: "insensitive",
-          },
-        },
-        {
-          author: {
-            name: {
+
+  return prisma.$transaction(async (tx) => {
+    const result = await tx.post.findMany({
+      take,
+      skip,
+      include: {
+        author: true,
+        category: true,
+      },
+      orderBy:
+        sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: "desc" },
+      where: {
+        //   author: {
+        //     id: {
+        //       equals: authorId,
+        //     },
+        //   },
+        OR: [
+          {
+            title: {
               contains: searchTerm,
               mode: "insensitive",
             },
           },
-        },
-      ],
-    },
-  });
+          {
+            author: {
+              name: {
+                contains: searchTerm,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      },
+    });
 
-  return result;
+    const total = await tx.post.count();
+
+    return {
+      total,
+      data: result,
+    };
+  });
 };
 const getSinglePost = async (id: number) => {
   const result = await prisma.post.findUnique({

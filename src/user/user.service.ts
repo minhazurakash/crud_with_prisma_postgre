@@ -2,16 +2,16 @@ import { PrismaClient, Profile, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const getUsers = () => {
-  const result = prisma.user.findMany({
+const getUsers = async () => {
+  const result = await prisma.user.findMany({
     include: {
       profile: true,
     },
   });
   return result;
 };
-const getSingleUser = (id: number) => {
-  const result = prisma.user.findUnique({
+const getSingleUser = async (id: number) => {
+  const result = await prisma.user.findUnique({
     where: { id },
     include: {
       profile: true,
@@ -20,8 +20,8 @@ const getSingleUser = (id: number) => {
   return result;
 };
 
-const createUser = (data: User): Promise<User> => {
-  const result = prisma.user.create({ data });
+const createUser = async (data: User): Promise<User> => {
+  const result = await prisma.user.create({ data });
   return result;
 };
 
@@ -33,7 +33,7 @@ const createOrUpdateProfile = async (data: Profile): Promise<Profile> => {
   });
 
   if (isExisted) {
-    const result = prisma.profile.update({
+    const result = await prisma.profile.update({
       where: {
         userId: data?.userId,
       },
@@ -43,7 +43,7 @@ const createOrUpdateProfile = async (data: Profile): Promise<Profile> => {
     });
     return result;
   } else {
-    const result = prisma.profile.create({
+    const result = await prisma.profile.create({
       data: {
         bio: data?.bio,
         userId: data?.userId,
@@ -53,9 +53,17 @@ const createOrUpdateProfile = async (data: Profile): Promise<Profile> => {
   }
 };
 
+const deleteUser = async (id: number) => {
+  const result = await prisma.user.delete({
+    where: { id },
+  });
+  return result;
+};
+
 export const UserService = {
   getUsers,
   getSingleUser,
   createUser,
   createOrUpdateProfile,
+  deleteUser,
 };

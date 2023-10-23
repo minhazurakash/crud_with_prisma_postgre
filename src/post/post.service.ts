@@ -3,8 +3,12 @@ import { Post, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const getPosts = async (options: any) => {
-  const { sortBy, sortOrder, searchTerm, authorId } = options;
+  const { sortBy, sortOrder, searchTerm, authorId, page, limit } = options;
+  const take = parseInt(limit) || 10;
+  const skip = parseInt(limit) * parseInt(page) - parseInt(limit) || 0;
   const result = await prisma.post.findMany({
+    take,
+    skip,
     include: {
       author: true,
       category: true,
@@ -12,6 +16,11 @@ const getPosts = async (options: any) => {
     orderBy:
       sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: "desc" },
     where: {
+      //   author: {
+      //     id: {
+      //       equals: authorId,
+      //     },
+      //   },
       OR: [
         {
           title: {
@@ -28,11 +37,6 @@ const getPosts = async (options: any) => {
           },
         },
       ],
-      author: {
-        id: {
-          equals: Number(authorId),
-        },
-      },
     },
   });
 

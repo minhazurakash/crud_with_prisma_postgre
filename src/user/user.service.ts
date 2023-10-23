@@ -53,9 +53,17 @@ const createOrUpdateProfile = async (data: Profile): Promise<Profile> => {
   }
 };
 
+const deleteUser = async (id: number) => {
+  const result = await prisma.user.delete({
+    where: { id },
+  });
+  return result;
+};
+
 export const UserService = {
   getUsers,
   getSingleUser,
   createUser,
   createOrUpdateProfile,
+  deleteUser,
 };

@@ -37,9 +37,24 @@ const updatePost = async (req: Request, res: Response) => {
   });
 };
 
+const deletePost = async (req: Request, res: Response) => {
+  try {
+    const result = await PostService.deletePost(Number(req.params.id));
+
+    res.send({
+      success: true,
+      message: "user fetched successful",
+      data: result,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+
 export const PostController = {
   getPosts,
   getSinglePost,
   createPost,
   updatePost,
+  deletePost,
 };

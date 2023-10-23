@@ -44,9 +44,24 @@ const updateCategory = async (req: Request, res: Response) => {
   });
 };
 
+const deleteCategory = async (req: Request, res: Response) => {
+  try {
+    const result = await CategoryService.deleteCategory(Number(req.params.id));
+
+    res.send({
+      success: true,
+      message: "user fetched successful",
+      data: result,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+
 export const CategoryController = {
   getCategories,
   getSingleCategory,
   createCategory,
   updateCategory,
+  deleteCategory,
 };

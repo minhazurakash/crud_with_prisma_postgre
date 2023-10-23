@@ -55,9 +55,24 @@ const createOrUpdateProfile = async (req: Request, res: Response) => {
   }
 };
 
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const result = await UserService.deleteUser(Number(req.params.id));
+
+    res.send({
+      success: true,
+      message: "user fetched successful",
+      data: result,
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+
 export const UserController = {
   getUsers,
   getSingleUser,
   createUser,
   createOrUpdateProfile,
+  deleteUser,
 };

@@ -2,13 +2,40 @@ import { Post, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const getPosts = async () => {
+const getPosts = async (options: any) => {
+  const { sortBy, sortOrder, searchTerm, authorId } = options;
   const result = await prisma.post.findMany({
     include: {
       author: true,
       category: true,
     },
+    orderBy:
+      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: "desc" },
+    where: {
+      OR: [
+        {
+          title: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        },
+        {
+          author: {
+            name: {
+              contains: searchTerm,
+              mode: "insensitive",
+            },
+          },
+        },
+      ],
+      author: {
+        id: {
+          equals: Number(authorId),
+        },
+      },
+    },
   });
+
   return result;
 };
 const getSinglePost = async (id: number) => {

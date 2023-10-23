@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { PostService } from "./post.service";
 
 const getPosts = async (req: Request, res: Response) => {
-  const result = await PostService.getPosts();
+  const options = req.query;
+  const result = await PostService.getPosts(options);
   res.send({
     success: true,
     message: "Post fetch successful",
